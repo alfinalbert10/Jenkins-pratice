@@ -3,17 +3,17 @@ pipeline {
 
     environment {
         AWS_REGION = 'us-east-1'
-        S3_BUCKET = ''
+        S3_BUCKET = 'java-artifact-store '
     }
     tools {
         maven "MAVEN3"
-        jdk "OpenJDK17"
+        jdk "OracleJDK17"
     }
 
     stages {
         stage('fetching code from github'){
             steps {
-                git branch: 'main' url: 'https://github.com/alfinalbert10/Jenkins-pratice.git'
+                git branch: 'main', url: 'https://github.com/alfinalbert10/Jenkins-pratice.git'
             }
         }
 
