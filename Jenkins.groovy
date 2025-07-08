@@ -47,7 +47,7 @@ pipeline {
             }
             steps {
                 withSonarQubeEnv('sonar') {
-                    withCredentials([string(credentialsId: 'sonar-token-id', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'Mysonartoken', variable: 'SONAR_TOKEN')]) {
                         sh '''
                         ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=vprofile \
