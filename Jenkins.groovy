@@ -44,13 +44,13 @@ pipeline {
 
         stage('Upload to S3') {
             steps {
-                withAWS(credentials: 'aws-jenkins', region: "${AWS_REGION}") {
+            
                     s3Upload(
                         bucket: "${S3_BUCKET}",
                         file: 'target/vprofile-v2.war',
                         path: "builds/myapp-${BUILD_NUMBER}-${ BUILD_TIMESTAMP}.war"
                     )
-                }
+                
             } 
         }
     }
