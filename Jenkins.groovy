@@ -3,15 +3,16 @@ pipeline {
 
     environment {
         AWS_REGION = 'us-east-1'
-        S3_BUCKET = 'java-artifact-store '
+        S3_BUCKET = 'java-artifact-store'
     }
+
     tools {
         maven "MAVEN3"
         jdk "OracleJDK17"
     }
 
     stages {
-        stage('fetching code from github'){
+        stage('Fetching Code from GitHub') {
             steps {
                 git branch: 'main', url: 'https://github.com/alfinalbert10/Jenkins-pratice.git'
             }
@@ -28,54 +29,29 @@ pipeline {
                 }
             }
         }
-        stage('Test'){
+
+        stage('Test') {
             steps {
                 sh 'mvn test'
             }
-
         }
 
-        stage('Checkstyle Analysis'){
+        stage('Checkstyle Analysis') {
             steps {
                 sh 'mvn checkstyle:checkstyle'
             }
         }
 
-        stage('SonarQube Analysis') {
-            environment {
-                scannerHome = tool 'sonar4.7'
-            }
+        stage('Upload to S3') {
             steps {
-                withSonarQubeEnv('sonar') {
-                    withCredentials([string(credentialsId: 'Mysonartoken', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=vprofile \
-                        -Dsonar.projectName=vprofile \
-                        -Dsonar.projectVersion=1.0 \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
-                        -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                        -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                        -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml \
-                        -Dsonar.host.url=http://3.81.0.204 \
-                        -Dsonar.login=$SONAR_TOKEN \
-                        -X
-                        '''
-                    }
+                withAWS(credentials: 'aws-jenkins', region: "${AWS_REGION}") {
+                    s3Upload(
+                        bucket: "${S3_BUCKET}",
+                        file: 'target/vprofile-v2.war',
+                        path: "builds/myapp-${BUILD_NUMBER}-${ BUILD_TIMESTAMP}.war"
+                    )
                 }
-            }
+            } 
         }
-
-
-        stage('Quality Gate'){
-            steps {
-                timeout(time: 1, unit: 'HOURS'){
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-
     }
 }
