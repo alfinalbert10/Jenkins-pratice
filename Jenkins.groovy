@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('fetching code from github'){
             steps {
-                git branch: 'main' url: 'https://github.com/natrajwadhai13/hkhcoder-vprofile-project.git'
+                git branch: 'main' url: 'https://github.com/alfinalbert10/Jenkins-pratice.git'
             }
         }
 
